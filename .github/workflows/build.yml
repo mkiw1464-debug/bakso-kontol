@@ -71,6 +71,33 @@ jobs:
           cd "${{ steps.paths.outputs.PROJ_DIR }}"
           xcodebuild -project FFEX.xcodeproj -list 2>&1 || true
 
+      - name: Obfuscate strings
+        run: |
+          python3 - << 'PEOF'
+          import os,re,random
+          ws = os.environ.get('GITHUB_WORKSPACE','.')
+          K = random.randint(0x11,0xFE)
+          def obf(s,k): return 'String(bytes:([\"+'\',\'\'.join(f\"0x{x^k:02x}\" for x in s.encode())+\"]).map{$0^UInt8('+str(k)+'\")},encoding:.utf8)!\"'
+          def skip(s): return len(s)<3 or any(c in s for c in ['\\(','\\n','\\t','%']) or re.match(r'^(com\\.|https?:|arm|ios|swift|ffex|0x|_)',s,re.I)
+          n=0
+          for root,dirs,files in os.walk(ws):
+              dirs[:]=[d for d in dirs if d not in['.git','DerivedData']]
+              for f in files:
+                  if not f.endswith('.swift'):continue
+                  fp=os.path.join(root,f)
+                  try:
+                      src=open(fp).read()
+                      def rep(m):
+                          global n; s=m.group(1)
+                          if skip(s): return m.group(0)
+                          b=s.encode(); arr=','.join(f'0x{x^K:02x}' for x in b)
+                          n+=1; return f'String(bytes:[{arr}].map{{$0^UInt8({K})}},encoding:.utf8)!'
+                      new=re.sub(r'"([A-Za-z][^"\\]{2,60})"',rep,src)
+                      if new!=src: open(fp,'w').write(new)
+                  except: pass
+          print(f'Obfuscated {n} strings key=0x{K:02x}')
+          PEOF
+
       - name: Build (unsigned, iphoneos arm64 only)
         run: |
           set -o pipefail
