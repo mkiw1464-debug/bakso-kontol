@@ -330,13 +330,14 @@ enum FFInjectService {
             throw FFInjectError.writeFailed("rename errno=\(errno)")
         }
     }
-}
+
+    // MARK: - Anti-copy stamp
     private static func stampLocalConfig(data: Data, session: InjectSession) -> Data {
         let cheat = CheatSettings.shared
         return cheat.toJSON(token: session.sessionToken, hwid: DeviceID.hwid) ?? data
     }
 
-    // Write feature .dat files into game Documents
+    // MARK: - Feature files
     static func writeFeatureFiles(game: FFGame, session: InjectSession) {
         guard let containerPath = ContainerStore.resolveAppContainerPath(bundleID: game.bundleID) else { return }
         let handle = ContainerStore.grantContainerAccess(containerPath)
@@ -355,5 +356,4 @@ enum FFInjectService {
             }
         }
     }
-
-
+}
