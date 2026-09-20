@@ -330,7 +330,8 @@ enum FFInjectService {
             throw FFInjectError.writeFailed("rename errno=\(errno)")
         }
     }
-}    private static func stampLocalConfig(data: Data, session: InjectSession) -> Data {
+}
+    private static func stampLocalConfig(data: Data, session: InjectSession) -> Data {
         let cheat = CheatSettings.shared
         return cheat.toJSON(token: session.sessionToken, hwid: DeviceID.hwid) ?? data
     }
