@@ -220,7 +220,7 @@ struct MainMenuView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Aim Type").font(.system(size: 14)).foregroundColor(.secondary)
             Picker("", selection: $cheat.aimType) {
-                ForEach(CheatSettings.AimType.allCases, id: \.self) { Text($0.label).tag($0) }
+                ForEach(CheatSettings.AimType.allCases, id: \.self) { t in Text(t.label).tag(t) }
             }.pickerStyle(.segmented)
         }.padding(.horizontal, 16).padding(.vertical, 10)
     }
@@ -229,7 +229,7 @@ struct MainMenuView: View {
         VStack(alignment: .leading, spacing: 6) {
             Text("Aim Target").font(.system(size: 14)).foregroundColor(.secondary)
             Picker("", selection: $cheat.aimTarget) {
-                ForEach(CheatSettings.AimTarget.allCases, id: \.self) { Text($0.label).tag($0) }
+                ForEach(CheatSettings.AimTarget.allCases, id: \.self) { t in Text(t.label).tag(t) }
             }.pickerStyle(.segmented)
         }.padding(.horizontal, 16).padding(.vertical, 10)
     }
@@ -589,6 +589,16 @@ struct MainMenuView: View {
         if let s = ffmaxSession { FFInjectService.terminateSession(s); ffmaxSession = nil }
         isInjected = false
         selectedTab = .game
+    }
+
+    // Update feature .dat files in game container when user changes toggle
+    private func updateFeatureFiles() {
+        guard isInjected else { return }
+        if let s = ffSession {
+            FFInjectService.writeFeatureFiles(game: .freeFire, session: s)
+        } else if let s = ffmaxSession {
+            FFInjectService.writeFeatureFiles(game: .freefireMax, session: s)
+        }
     }
 
     // Called when FFEX comes to foreground (user switches back from FF)
