@@ -105,7 +105,7 @@ final class SessionStore: NSObject, ObservableObject {
             case .ok:
                 self.networkErrorCount = 0
             case .revoked(let reason):
-                self.logout(reason: reason)
+               self.logout(reason: reason)
             case .networkError:
                 self.networkErrorCount += 1
                 if self.networkErrorCount >= self.maxNetworkErrors {
