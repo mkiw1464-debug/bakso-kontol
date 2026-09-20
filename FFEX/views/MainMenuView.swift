@@ -216,6 +216,24 @@ struct MainMenuView: View {
 
     // MARK: - MENU Tab
 
+    @ViewBuilder private var aimTypePicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Aim Type").font(.system(size: 14)).foregroundColor(.secondary)
+            Picker("", selection: $cheat.aimType) {
+                ForEach(CheatSettings.AimType.allCases, id: \.self) { Text($0.label).tag($0) }
+            }.pickerStyle(.segmented)
+        }.padding(.horizontal, 16).padding(.vertical, 10)
+    }
+
+    @ViewBuilder private var aimTargetPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Aim Target").font(.system(size: 14)).foregroundColor(.secondary)
+            Picker("", selection: $cheat.aimTarget) {
+                ForEach(CheatSettings.AimTarget.allCases, id: \.self) { Text($0.label).tag($0) }
+            }.pickerStyle(.segmented)
+        }.padding(.horizontal, 16).padding(.vertical, 10)
+    }
+
     private var menuTab: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -239,35 +257,8 @@ struct MainMenuView: View {
                 settingsSection(header: "AIM") {
                     toggle("Enable AIM", $cheat.aimEnabled, risk: false)
 
-                    // Aim Type segment
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Aim Type")
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                        Picker("", selection: $cheat.aimType) {
-                            ForEach(CheatSettings.AimType.allCases, id: \.self) {
-                                Text($0.label).tag($0)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-
-                    // Aim Target segment
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Aim Target")
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                        Picker("", selection: $cheat.aimTarget) {
-                            ForEach(CheatSettings.AimTarget.allCases, id: \.self) {
-                                Text($0.label).tag($0)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
+                    aimTypePicker
+                    aimTargetPicker
 
                     toggle("Ignore Knockdown", $cheat.aimIgnoreKnockdown, risk: false)
                     toggle("Draw FOV", $cheat.aimDrawFov, risk: false)
@@ -302,23 +293,23 @@ struct MainMenuView: View {
                 Spacer(minLength: 40)
             }
         }
-        .onChange(of: cheat.espEnabled)      { _ in cheat.save(); updateFeatureFiles() }
-        .onChange(of: cheat.espLine)         { _ in cheat.save() }
-        .onChange(of: cheat.espBox)          { _ in cheat.save() }
-        .onChange(of: cheat.espHealth)       { _ in cheat.save() }
-        .onChange(of: cheat.espName)         { _ in cheat.save() }
-        .onChange(of: cheat.espPlayerCount)  { _ in cheat.save() }
-        .onChange(of: cheat.aimEnabled)      { _ in cheat.save() }
-        .onChange(of: cheat.aimType)         { _ in cheat.save() }
-        .onChange(of: cheat.aimTarget)       { _ in cheat.save() }
+        .onChange(of: cheat.espEnabled)      { [self] _ in cheat.save(); self.updateFeatureFiles() }
+        .onChange(of: cheat.espLine) { _ in cheat.save() }
+        .onChange(of: cheat.espBox) { _ in cheat.save() }
+        .onChange(of: cheat.espHealth) { _ in cheat.save() }
+        .onChange(of: cheat.espName) { _ in cheat.save() }
+        .onChange(of: cheat.espPlayerCount) { _ in cheat.save() }
+        .onChange(of: cheat.aimEnabled) { _ in cheat.save() }
+        .onChange(of: cheat.aimType) { _ in cheat.save() }
+        .onChange(of: cheat.aimTarget) { _ in cheat.save() }
         .onChange(of: cheat.aimIgnoreKnockdown) { _ in cheat.save() }
-        .onChange(of: cheat.aimDrawFov)      { _ in cheat.save() }
-        .onChange(of: cheat.aimFovValue)     { _ in cheat.save() }
-        .onChange(of: cheat.miscNoRecoil)    { _ in cheat.save() }
-        .onChange(of: cheat.miscSpeed)       { _ in cheat.save() }
+        .onChange(of: cheat.aimDrawFov) { _ in cheat.save() }
+        .onChange(of: cheat.aimFovValue) { _ in cheat.save() }
+        .onChange(of: cheat.miscNoRecoil) { _ in cheat.save() }
+        .onChange(of: cheat.miscSpeed) { _ in cheat.save() }
         .onChange(of: cheat.miscFastLanding) { _ in cheat.save() }
-        .onChange(of: cheat.miscFastMedkit)  { _ in cheat.save() }
-        .onChange(of: cheat.miscFastRevive)  { _ in cheat.save() }
+        .onChange(of: cheat.miscFastMedkit) { _ in cheat.save() }
+        .onChange(of: cheat.miscFastRevive) { _ in cheat.save() }
     }
 
     @ViewBuilder
